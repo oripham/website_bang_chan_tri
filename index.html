@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Máy tính bảng chân trị</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 30px;
+            text-align: center;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .input-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border-left: 5px solid #4facfe;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 10px rgba(79, 172, 254, 0.3);
+        }
+
+        .operators-help {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .operators-help h3 {
+            color: #1976d2;
+            margin-bottom: 15px;
+        }
+
+        .operator-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .operator-item {
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #4facfe;
+        }
+
+        .operator-item code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(79, 172, 254, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(250, 112, 154, 0.4);
+        }
+
+        .result-section {
+            margin-top: 30px;
+        }
+
+        .expression-display {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 5px solid #28a745;
+        }
+
+        .expression-display h3 {
+            color: #28a745;
+            margin-bottom: 10px;
+        }
+
+        .expression-display .formula {
+            font-size: 1.2em;
+            font-family: 'Courier New', monospace;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #28a745;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 16px;
+            background: white;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #ddd;
+            font-weight: bold;
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 1.1em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        td {
+            background: #f8f9fa;
+            transition: background-color 0.3s ease;
+        }
+
+        tr:nth-child(even) td {
+            background: #e9ecef;
+        }
+
+        tr:hover td {
+            background: #fff3cd;
+        }
+
+        .true {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .false {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #dc3545;
+            margin: 20px 0;
+        }
+
+        .error h3 {
+            margin-bottom: 10px;
+        }
+
+        .analysis {
+            background: #d4edda;
+            color: #155724;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #28a745;
+            margin-top: 20px;
+        }
+
+        .analysis h3 {
+            margin-bottom: 10px;
+        }
+
+        .examples {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #ffc107;
+        }
+
+        .examples h3 {
+            color: #856404;
+            margin-bottom: 15px;
+        }
+
+        .example-item {
+            background: white;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .example-item:hover {
+            background: #f0f0f0;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .buttons {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧮 Máy tính bảng chân trị</h1>
+            <p>Nhập biểu thức logic và xem bảng chân trị chi tiết</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="expression">Nhập biểu thức logic:</label>
+                    <input type="text" id="expression" placeholder="Ví dụ: (p & q) | r" value="(p <=> q) & p => q">
+                </div>
+                
+                <div class="operators-help">
+                    <h3>📚 Các toán tử được hỗ trợ:</h3>
+                    <div class="operator-list">
+                        <div class="operator-item">
+                            <strong>Phép AND:</strong> <code>&</code>, <code>&&</code>, <code>∧</code>
+                        </div>
+                        <div class="operator-item">
+                            <strong>Phép OR:</strong> <code>|</code>, <code>||</code>, <code>∨</code>
+                        </div>
+                        <div class="operator-item">
+                            <strong>Phép NOT:</strong> <code>!</code>, <code>~</code>, <code>¬</code>
+                        </div>
+                        <div class="operator-item">
+                            <strong>Phép XOR:</strong> <code>^</code>, <code>⊕</code>
+                        </div>
+                        <div class="operator-item">
+                            <strong>Kéo theo:</strong> <code>=></code>, <code>-></code>, <code>→</code>
+                        </div>
+                        <div class="operator-item">
+                            <strong>Song điều kiện:</strong> <code><=></code>, <code><-></code>, <code>↔</code>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="examples">
+                    <h3>💡 Ví dụ:</h3>
+                    <div class="example-item" onclick="setExample('(p & q) | r')">
+                        (p & q) | r - Phép OR giữa (p AND q) và r
+                    </div>
+                    <div class="example-item" onclick="setExample('p => q')">
+                        p => q - Phép kéo theo
+                    </div>
+                    <div class="example-item" onclick="setExample('(p <=> q) & p => q')">
+                        (p <=> q) & p => q - Song điều kiện và kéo theo
+                    </div>
+                    <div class="example-item" onclick="setExample('!(p & q) <=> (!p | !q)')">
+                        !(p & q) <=> (!p | !q) - Định luật De Morgan
+                    </div>
+                </div>
+                
+                <div class="buttons">
+                    <button class="btn-primary" onclick="generateTruthTable()">
+                        🔍 Tạo bảng chân trị
+                    </button>
+                    <button class="btn-secondary" onclick="clearAll()">
+                        🗑️ Xóa tất cả
+                    </button>
+                </div>
+            </div>
+            
+            <div id="result" class="result-section"></div>
+        </div>
+    </div>
+
+    <script>
+        // Hàm chuẩn hóa biểu thức
+        function normalizeExpression(expr) {
+            return expr
+                .replace(/\s+/g, ' ')
+                .replace(/&&/g, '&')
+                .replace(/\|\|/g, '|')
+                .replace(/∧/g, '&')
+                .replace(/∨/g, '|')
+                .replace(/¬/g, '!')
+                .replace(/⊕/g, '^')
+                .replace(/→/g, '=>')
+                .replace(/↔/g, '<=>')
+                .replace(/->/g, '=>')
+                .replace(/<->/g, '<=>')
+                .trim();
+        }
+
+        // Tìm tất cả các biến trong biểu thức
+        function findVariables(expr) {
+            const vars = new Set();
+            const normalizedExpr = normalizeExpression(expr);
+            
+            for (let i = 0; i < normalizedExpr.length; i++) {
+                const char = normalizedExpr[i];
+                if (/[a-zA-Z]/.test(char)) {
+                    vars.add(char);
+                }
+            }
+            
+            return Array.from(vars).sort();
+        }
+
+        // Tạo tất cả các tổ hợp giá trị chân trị
+        function generateCombinations(variables) {
+            const n = variables.length;
+            const combinations = [];
+            
+            for (let i = 0; i < Math.pow(2, n); i++) {
+                const combination = {};
+                for (let j = 0; j < n; j++) {
+                    combination[variables[j]] = !!(i & (1 << (n - 1 - j)));
+                }
+                combinations.push(combination);
+            }
+            
+            return combinations;
+        }
+
+        // Đánh giá biểu thức logic
+        function evaluateExpression(expr, values) {
+            try {
+                return evaluateLogicalExpression(expr, values);
+            } catch (error) {
+                throw new Error(`Lỗi đánh giá biểu thức: ${error.message}`);
+            }
+        }
+
+        // Đánh giá biểu thức logic bằng parser tự viết
+        function evaluateLogicalExpression(expr, values) {
+            const tokens = tokenize(normalizeExpression(expr), values);
+            const ast = parseExpression(tokens);
+            return evaluateAST(ast);
+        }
+
+        // Tokenize biểu thức
+        function tokenize(expr, values) {
+            const tokens = [];
+            let i = 0;
+            
+            while (i < expr.length) {
+                const char = expr[i];
+                
+                if (char === ' ') {
+                    i++;
+                    continue;
+                }
+                
+                if (char === '(') {
+                    tokens.push({ type: 'LPAREN', value: '(' });
+                    i++;
+                } else if (char === ')') {
+                    tokens.push({ type: 'RPAREN', value: ')' });
+                    i++;
+                } else if (char === '!') {
+                    tokens.push({ type: 'NOT', value: '!' });
+                    i++;
+                } else if (expr.substr(i, 3) === '<=>') {
+                    tokens.push({ type: 'BICONDITIONAL', value: '<=>' });
+                    i += 3;
+                } else if (expr.substr(i, 2) === '=>') {
+                    tokens.push({ type: 'IMPLICATION', value: '=>' });
+                    i += 2;
+                } else if (char === '&') {
+                    tokens.push({ type: 'AND', value: '&' });
+                    i++;
+                } else if (char === '|') {
+                    tokens.push({ type: 'OR', value: '|' });
+                    i++;
+                } else if (char === '^') {
+                    tokens.push({ type: 'XOR', value: '^' });
+                    i++;
+                } else if (/[a-zA-Z]/.test(char)) {
+                    // Thay thế biến bằng giá trị boolean
+                    const value = values[char];
+                    tokens.push({ type: 'BOOLEAN', value: value });
+                    i++;
+                } else if (expr.substr(i, 4) === 'true') {
+                    tokens.push({ type: 'BOOLEAN', value: true });
+                    i += 4;
+                } else if (expr.substr(i, 5) === 'false') {
+                    tokens.push({ type: 'BOOLEAN', value: false });
+                    i += 5;
+                } else {
+                    throw new Error(`Ký tự không hợp lệ: ${char}`);
+                }
+            }
+            
+            return tokens;
+        }
+
+        // Parser biểu thức với độ ưu tiên toán tử
+        function parseExpression(tokens) {
+            let index = 0;
+            
+            function peek() {
+                return tokens[index];
+            }
+            
+            function consume() {
+                return tokens[index++];
+            }
+            
+            function parseBiconditional() {
+                let left = parseImplication();
+                
+                while (peek() && peek().type === 'BICONDITIONAL') {
+                    consume(); // consume <=>
+                    const right = parseImplication();
+                    left = { type: 'BICONDITIONAL', left, right };
+                }
+                
+                return left;
+            }
+            
+            function parseImplication() {
+                let left = parseOr();
+                
+                while (peek() && peek().type === 'IMPLICATION') {
+                    consume(); // consume =>
+                    const right = parseOr();
+                    left = { type: 'IMPLICATION', left, right };
+                }
+                
+                return left;
+            }
+            
+            function parseOr() {
+                let left = parseXor();
+                
+                while (peek() && peek().type === 'OR') {
+                    consume(); // consume |
+                    const right = parseXor();
+                    left = { type: 'OR', left, right };
+                }
+                
+                return left;
+            }
+            
+            function parseXor() {
+                let left = parseAnd();
+                
+                while (peek() && peek().type === 'XOR') {
+                    consume(); // consume ^
+                    const right = parseAnd();
+                    left = { type: 'XOR', left, right };
+                }
+                
+                return left;
+            }
+            
+            function parseAnd() {
+                let left = parseNot();
+                
+                while (peek() && peek().type === 'AND') {
+                    consume(); // consume &
+                    const right = parseNot();
+                    left = { type: 'AND', left, right };
+                }
+                
+                return left;
+            }
+            
+            function parseNot() {
+                if (peek() && peek().type === 'NOT') {
+                    consume(); // consume !
+                    const operand = parseNot();
+                    return { type: 'NOT', operand };
+                }
+                
+                return parsePrimary();
+            }
+            
+            function parsePrimary() {
+                const token = peek();
+                
+                if (!token) {
+                    throw new Error('Biểu thức không đầy đủ');
+                }
+                
+                if (token.type === 'LPAREN') {
+                    consume(); // consume (
+                    const expr = parseBiconditional();
+                    if (!peek() || peek().type !== 'RPAREN') {
+                        throw new Error('Thiếu dấu ngoặc đóng');
+                    }
+                    consume(); // consume )
+                    return expr;
+                }
+                
+                if (token.type === 'VARIABLE') {
+                    consume();
+                    return { type: 'VARIABLE', value: token.value };
+                }
+                
+                if (token.type === 'BOOLEAN') {
+                    consume();
+                    return { type: 'BOOLEAN', value: token.value };
+                }
+                
+                throw new Error(`Token không mong đợi: ${token.type}`);
+            }
+            
+            const result = parseBiconditional();
+            
+            if (index < tokens.length) {
+                throw new Error('Còn token chưa được xử lý');
+            }
+            
+            return result;
+        }
+
+        // Đánh giá AST
+        function evaluateAST(node) {
+            switch (node.type) {
+                case 'BOOLEAN':
+                    return node.value;
+                    
+                case 'VARIABLE':
+                    return node.value; // Giá trị đã được thay thế trong tokenize
+                    
+                case 'NOT':
+                    return !evaluateAST(node.operand);
+                    
+                case 'AND':
+                    return evaluateAST(node.left) && evaluateAST(node.right);
+                    
+                case 'OR':
+                    return evaluateAST(node.left) || evaluateAST(node.right);
+                    
+                case 'XOR':
+                    return evaluateAST(node.left) !== evaluateAST(node.right);
+                    
+                case 'IMPLICATION':
+                    return !evaluateAST(node.left) || evaluateAST(node.right);
+                    
+                case 'BICONDITIONAL':
+                    return evaluateAST(node.left) === evaluateAST(node.right);
+                    
+                default:
+                    throw new Error(`Loại node không được hỗ trợ: ${node.type}`);
+            }
+        }
+
+        // Phân tích kết quả bảng chân trị
+        function analyzeResults(results) {
+            const allTrue = results.every(result => result.result === true);
+            const allFalse = results.every(result => result.result === false);
+            const trueCount = results.filter(result => result.result === true).length;
+            const totalCount = results.length;
+            
+            let analysis = '';
+            
+            if (allTrue) {
+                analysis = '✅ <strong>Hằng đúng (Tautology)</strong> - Biểu thức luôn đúng với mọi giá trị đầu vào.';
+            } else if (allFalse) {
+                analysis = '❌ <strong>Hằng sai (Contradiction)</strong> - Biểu thức luôn sai với mọi giá trị đầu vào.';
+            } else {
+                analysis = `🔄 <strong>Biểu thức thỏa mãn</strong> - Đúng trong ${trueCount}/${totalCount} trường hợp (${(trueCount/totalCount*100).toFixed(1)}%).`;
+            }
+            
+            return analysis;
+        }
+
+        // Tạo bảng chân trị
+        function generateTruthTable() {
+            const expressionInput = document.getElementById('expression');
+            const resultDiv = document.getElementById('result');
+            const expression = expressionInput.value.trim();
+            
+            if (!expression) {
+                resultDiv.innerHTML = '<div class="error"><h3>⚠️ Lỗi</h3><p>Vui lòng nhập biểu thức logic.</p></div>';
+                return;
+            }
+            
+            try {
+                const variables = findVariables(expression);
+                
+                if (variables.length === 0) {
+                    resultDiv.innerHTML = '<div class="error"><h3>⚠️ Lỗi</h3><p>Không tìm thấy biến nào trong biểu thức.</p></div>';
+                    return;
+                }
+                
+                const combinations = generateCombinations(variables);
+                const results = [];
+                
+                // Tính toán kết quả cho mỗi tổ hợp
+                for (const combination of combinations) {
+                    try {
+                        const result = evaluateExpression(expression, combination);
+                        results.push({
+                            values: { ...combination },
+                            result: result
+                        });
+                    } catch (error) {
+                        throw new Error(`Lỗi tính toán với ${JSON.stringify(combination)}: ${error.message}`);
+                    }
+                }
+                
+                // Tạo HTML cho bảng
+                let html = `
+                    <div class="expression-display">
+                        <h3>🔤 Biểu thức được phân tích:</h3>
+                        <div class="formula">${expression}</div>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                `;
+                
+                // Thêm header cho các biến
+                for (const variable of variables) {
+                    html += `<th>${variable}</th>`;
+                }
+                html += `<th>Kết quả</th></tr></thead><tbody>`;
+                
+                // Thêm các dòng dữ liệu
+                for (const result of results) {
+                    html += '<tr>';
+                    for (const variable of variables) {
+                        const value = result.values[variable];
+                        html += `<td class="${value ? 'true' : 'false'}">${value ? 'T' : 'F'}</td>`;
+                    }
+                    html += `<td class="${result.result ? 'true' : 'false'}">${result.result ? 'T' : 'F'}</td>`;
+                    html += '</tr>';
+                }
+                
+                html += '</tbody></table></div>';
+                
+                // Thêm phân tích
+                const analysis = analyzeResults(results);
+                html += `
+                    <div class="analysis">
+                        <h3>📊 Phân tích kết quả:</h3>
+                        <p>${analysis}</p>
+                    </div>
+                `;
+                
+                resultDiv.innerHTML = html;
+                
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h3>⚠️ Lỗi</h3>
+                        <p><strong>Chi tiết lỗi:</strong> ${error.message}</p>
+                        <p><strong>Gợi ý:</strong> Kiểm tra lại cú pháp biểu thức. Đảm bảo sử dụng đúng toán tử và dấu ngoặc.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Đặt ví dụ
+        function setExample(example) {
+            document.getElementById('expression').value = example;
+        }
+
+        // Xóa tất cả
+        function clearAll() {
+            document.getElementById('expression').value = '';
+            document.getElementById('result').innerHTML = '';
+        }
+
+        // Xử lý phím Enter
+        document.getElementById('expression').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                generateTruthTable();
+            }
+        });
+
+        // Tự động tạo bảng chân trị khi tải trang
+        window.addEventListener('load', function() {
+            generateTruthTable();
+        });
+    </script>
+</body>
+</html>
